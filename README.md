@@ -1,4 +1,4 @@
-# storail
+# Stóráil
 
 [![Package Version](https://img.shields.io/hexpm/v/storail)](https://hex.pm/packages/storail)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/storail/)
