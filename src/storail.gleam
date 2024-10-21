@@ -7,6 +7,8 @@
 
 import decode/zero as de
 import filepath
+import gleam/bit_array
+import gleam/crypto
 import gleam/dict.{type Dict}
 import gleam/json.{type Json}
 import gleam/list
@@ -114,10 +116,15 @@ fn object_data_path(key: Key(t)) -> String {
   |> filepath.join(key.id <> ".json")
 }
 
-// TODO: include a random string to avoid concurrent clobbering
 fn object_tmp_path(key: Key(t)) -> String {
+  let random_component =
+    crypto.strong_random_bytes(16)
+    |> bit_array.base64_url_encode(False)
+    |> string.slice(0, 16)
+  let name =
+    key.collection.name <> "-" <> key.id <> "-" <> random_component <> ".json"
   key.collection.config.temporary_directory
-  |> filepath.join(key.collection.name <> "-" <> key.id <> ".json")
+  |> filepath.join(name)
 }
 
 fn ensure_parent_directory_exists(path: String) -> Result(Nil, StorailError) {
