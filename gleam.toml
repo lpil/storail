@@ -1,20 +1,16 @@
 name = "storail"
 version = "1.0.0"
+description = "A simple on-disc JSON based data store"
 
-# Fill out these fields if you intend to generate HTML documentation or publish
-# your project to the Hex package manager.
-#
-# description = ""
-# licences = ["Apache-2.0"]
-# repository = { type = "github", user = "", repo = "" }
-# links = [{ title = "Website", href = "" }]
-#
-# For a full reference of all the available options, you can have a look at
-# https://gleam.run/writing-gleam/gleam-toml/.
+licences = ["Apache-2.0"]
+repository = { type = "github", user = "", repo = "" }
+links = [
+  { title = "Sponsor", href = "https://github.com/sponsors/lpil" },
+]
 
 [dependencies]
 gleam_stdlib = ">= 0.34.0 and < 2.0.0"
-gleam_json = ">= 2.0.0 and < 3.0.0"
+gleam_json = ">= 1.0.0 and < 3.0.0"
 simplifile = ">= 2.2.0 and < 3.0.0"
 decode = ">= 0.3.0 and < 1.0.0"
 directories = ">= 1.1.0 and < 2.0.0"
