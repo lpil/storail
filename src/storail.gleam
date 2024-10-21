@@ -1,5 +1,9 @@
 //// A super basic on-disc data store that uses JSON files to persist data.
-//// For tiny little pet projects, and for fun.
+////
+//// It doesn't have transactions, MVCC, or anything like that. It's just
+//// writing files to disc.
+////
+//// Useful for tiny little projects, and for fun.
 
 import decode/zero as de
 import filepath
@@ -10,6 +14,9 @@ import gleam/result
 import gleam/string
 import simplifile
 
+/// The configuration for your storage. This can be different per-collection if
+/// you prefer, but typically you'd use the same for all collections.
+///
 pub type Config {
   Config(
     /// The directory where the recorded data will be written to.
@@ -25,17 +32,54 @@ pub type Config {
   )
 }
 
+/// A collection, similar to a table in a relational database.
+///
+/// Construct this type to be able to read and write values of type to the
+/// database.
+///
 pub type Collection(t) {
   Collection(
+    /// The name of the collection. This needs to be suitable for use in file
+    /// paths. Typically lowercase plural names are recommended, such as "cats"
+    /// and "people".
     name: String,
+    /// A function that encodes a value into JSON, ready to be written to the
+    /// disc.
     to_json: fn(t) -> Json,
+    /// A decoder that transforms the JSON from disc back into the expected
+    /// type. 
+    ///
+    /// If you change the structure of your JSON you will need to make sure this
+    /// decoder supports both the new and the old format, otherwise it will fail
+    /// when decoding older JSON.
     decoder: de.Decoder(t),
+    /// The configuration for this collection. See the `Config` type for
+    /// details.
     config: Config,
   )
 }
 
+/// A pointer into a collection, where an instance could be written to or read
+/// from. Typically this would be constructed with the `key` and
+/// `namespaced_key` functions.
+///
 pub type Key(t) {
-  Key(collection: Collection(t), namespace: List(String), id: String)
+  Key(
+    /// The collection this key is for.
+    collection: Collection(t),
+    /// A grouping that this key points into. All objects within a namespace can
+    /// be queried at once.
+    ///
+    /// A use for this may be to create "parents" for object. An "orders"
+    /// collection may conceptually belong to a "customer" entity, so you may
+    /// choose to give each order a namespace of `["customer", customer_id]`.
+    ///
+    /// Note that the namespace can be anything, you do not need a "customers"
+    /// collection to use `"customers"` in a namespace list.
+    namespace: List(String),
+    /// The identifier for the object. These are unique per-namespace.
+    id: String,
+  )
 }
 
 pub fn key(collection: Collection(t), id: String) -> Key(t) {
@@ -51,8 +95,11 @@ pub fn namespaced_key(
 }
 
 pub type StorailError {
+  /// No object was found for the given key, so there was nothing to read.
   ObjectNotFound(namespace: List(String), id: String)
+  /// The object could be read, but it could not be decoded in the desired type.
   CorruptJson(path: String, detail: json.DecodeError)
+  /// There was an error working with the filesystem.
   FileSystemError(path: String, detail: simplifile.FileError)
 }
 
@@ -80,6 +127,24 @@ fn ensure_parent_directory_exists(path: String) -> Result(Nil, StorailError) {
   |> result.map_error(FileSystemError(path, _))
 }
 
+/// Write an object to the file system.
+///
+/// Writing is done by writing the JSON to the temporary directory and then by
+/// moving to the data directory. Moving on the same file system is an atomic
+/// operation for most file systems, so this should avoid data corruption from
+/// half-written files when writing was interupted by the VM being killed, the
+/// computer being unplugged, etc.
+///
+/// # Examples
+///
+/// ```gleam
+/// pub fn run(cats: Collection(Cat)) {
+///   let cat = Cat(name: "Nubi", age: 5)
+///   storail.key(cats, "nubi") |> storail.write(cat)
+///   // -> Ok(Nil)
+/// }
+/// ```
+///
 pub fn write(key: Key(t), data: t) -> Result(Nil, StorailError) {
   let tmp_path = object_tmp_path(key)
   let data_path = object_data_path(key)
@@ -132,18 +197,54 @@ fn parse_json(
   }
 }
 
+/// Read an object from the file system.
+///
+/// # Examples
+///
+/// ```gleam
+/// pub fn run(cats: Collection(Cat)) {
+///   storail.key(cats, "nubi") |> storail.read
+///   // -> Ok(Cat(name: "Nubi", age: 5))
+/// }
+/// ```
+///
 pub fn read(key: Key(t)) -> Result(t, StorailError) {
   let path = object_data_path(key)
   use json <- result.try(read_file(path, key.namespace, key.id))
   parse_json(json, path, key.collection.decoder)
 }
 
+/// Delete an object from the file system.
+///
+/// # Examples
+///
+/// ```gleam
+/// pub fn run(cats: Collection(Cat)) {
+///   storail.key(cats, "nubi") |> storail.delete
+///   // -> Ok(Nil)
+/// }
+/// ```
+///
 pub fn delete(key: Key(t)) -> Result(Nil, StorailError) {
   let path = object_data_path(key)
   simplifile.delete_all([path])
   |> result.map_error(FileSystemError(path, _))
 }
 
+/// Read all objects from a namespace.
+///
+/// # Examples
+///
+/// ```gleam
+/// pub fn run(cats: Collection(Cat)) {
+///   storail.read_namespace(cats, ["owner", "hayleigh"])
+///   // -> Ok([
+///   //   Cat(name: "Haskell", age: 3),
+///   //   Cat(name: "Agda", age: 2),
+///   // ])
+/// }
+/// ```
+///
 pub fn read_namespace(
   collection: Collection(t),
   namespace: List(String),
