@@ -276,3 +276,33 @@ pub fn read_namespace(
       |> result.map(dict.from_list)
   }
 }
+
+/// List all objects in a namespace.
+///
+/// # Examples
+///
+/// ```gleam
+/// pub fn run(cats: Collection(Cat)) {
+///   storail.list(cats, ["owner", "hayleigh"])
+///   // -> Ok(["Haskell", "Agda"])
+/// }
+/// ```
+///
+pub fn list(
+  collection: Collection(t),
+  namespace: List(String),
+) -> Result(List(String), StorailError) {
+  let path = namespace_path(collection, namespace)
+  case simplifile.read_directory(path) {
+    Error(e) ->
+      case e {
+        simplifile.Enoent -> Ok([])
+        _ -> Error(FileSystemError(path, e))
+      }
+    Ok(contents) ->
+      contents
+      |> list.filter(string.ends_with(_, ".json"))
+      |> list.map(string.drop_right(_, 5))
+      |> Ok
+  }
+}

@@ -1,6 +1,8 @@
 import decode/zero as de
 import gleam/dict
 import gleam/json
+import gleam/list
+import gleam/string
 import gleeunit
 import gleeunit/should
 import simplifile
@@ -123,4 +125,36 @@ pub fn read_namespace_test() {
   storail.read_namespace(collection, ["0", "1"])
   |> should.be_ok
   |> should.equal(dict.from_list([#("a", Cat("a", 1)), #("b", Cat("b", 2))]))
+}
+
+pub fn list_test() {
+  reset_data()
+  let collection = cat_collection()
+
+  let assert Ok(_) =
+    storail.namespaced_key(collection, ["0", "1"], "a")
+    |> storail.write(Cat("a", 1))
+  let assert Ok(_) =
+    storail.namespaced_key(collection, ["0", "1"], "b")
+    |> storail.write(Cat("b", 2))
+
+  let assert Ok(_) =
+    storail.namespaced_key(collection, ["0"], "c")
+    |> storail.write(Cat("c", 3))
+  let assert Ok(_) =
+    storail.namespaced_key(collection, [], "d")
+    |> storail.write(Cat("d", 4))
+
+  storail.list(collection, [])
+  |> should.be_ok
+  |> should.equal(["d"])
+
+  storail.list(collection, ["0"])
+  |> should.be_ok
+  |> should.equal(["c"])
+
+  storail.list(collection, ["0", "1"])
+  |> should.be_ok
+  |> list.sort(string.compare)
+  |> should.equal(["a", "b"])
 }
