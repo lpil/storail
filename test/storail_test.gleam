@@ -12,10 +12,7 @@ pub fn main() {
   gleeunit.main()
 }
 
-const config = storail.Config(
-  data_directory: "tmp/data",
-  temporary_directory: "tmp/tmp",
-)
+const config = storail.Config(storage_path: "tmp/storage")
 
 fn reset_data() {
   let assert Ok(_) = simplifile.delete_all(["tmp"])
