@@ -12,6 +12,7 @@ import gleam/crypto
 import gleam/dict.{type Dict}
 import gleam/json.{type Json}
 import gleam/list
+import gleam/option.{type Option}
 import gleam/result
 import gleam/string
 import simplifile
@@ -215,6 +216,31 @@ pub fn read(key: Key(t)) -> Result(t, StorailError) {
   let path = object_data_path(key)
   use json <- result.try(read_file(path, key.namespace, key.id))
   parse_json(json, path, key.collection.decoder)
+}
+
+/// Read an object from the file system, returning `None` if there was no
+/// object with the given key.
+///
+/// # Examples
+///
+/// ```gleam
+/// pub fn run(cats: Collection(Cat)) {
+///   storail.key(cats, "nubi") |> storail.optional_read
+///   // -> Ok(Some(Cat(name: "Nubi", age: 5)))
+///
+///   storail.key(cats, "mills") |> storail.optional_read
+///   // -> Ok(None)
+/// }
+/// ```
+///
+pub fn optional_read(key: Key(t)) -> Result(Option(t), StorailError) {
+  let path = object_data_path(key)
+  case read_file(path, key.namespace, key.id) {
+    Ok(json) ->
+      parse_json(json, path, key.collection.decoder) |> result.map(option.Some)
+    Error(ObjectNotFound(..)) -> Ok(option.None)
+    Error(e) -> Error(e)
+  }
 }
 
 /// Delete an object from the file system.

@@ -2,6 +2,7 @@ import decode/zero as de
 import gleam/dict
 import gleam/json
 import gleam/list
+import gleam/option
 import gleam/string
 import gleeunit
 import gleeunit/should
@@ -47,6 +48,17 @@ pub fn read_write_test() {
   let key = storail.key(collection, "nubi")
   let assert Ok(_) = storail.write(key, Cat("Nubi", 5))
   let assert Ok(Cat("Nubi", 5)) = storail.read(key)
+}
+
+pub fn optional_read_test() {
+  reset_data()
+  let collection = cat_collection()
+  let key = storail.key(collection, "nubi")
+  let assert Ok(_) = storail.write(key, Cat("Nubi", 5))
+
+  let assert Ok(option.Some(Cat("Nubi", 5))) = storail.optional_read(key)
+  let assert Ok(option.None) =
+    storail.optional_read(storail.key(collection, "z"))
 }
 
 pub fn namespace_test() {

@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.0 - 2024-12-11
+
+- Added the `optional_read` function.
+
 ## v2.0.0 - 2024-12-11
 
 - The `data_directory` and `temporary_directory` configuration values have been
