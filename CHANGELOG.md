@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.0 - 2024-12-11
+
+- The `data_directory` and `temporary_directory` configuration values have been
+  replaced by the `storage_path` configuration.
+
 ## v1.1.0 - 2024-12-10
 
 - The `list` function was added.

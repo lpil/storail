@@ -21,16 +21,10 @@ import simplifile
 ///
 pub type Config {
   Config(
-    /// The directory where the recorded data will be written to.
-    /// The contents of this directory should be backed up.
-    data_directory: String,
-    /// A directory where temporary data will be written to.
-    /// This data does not need to be persisted and can be happily lost of
-    /// deleted.
-    ///
-    /// This should be on the same drive as the data directory in order to get
-    /// atomic file moving into that directory.
-    temporary_directory: String,
+    /// The directory where data will be written to. Within this directory
+    /// Stóráil will create two directories: `data` and `temporary`. You should
+    /// back-up the `data` directory.
+    storage_path: String,
   )
 }
 
@@ -106,7 +100,8 @@ pub type StorailError {
 }
 
 fn namespace_path(collection: Collection(t), namespace: List(String)) -> String {
-  collection.config.data_directory
+  collection.config.storage_path
+  |> filepath.join("data")
   |> filepath.join(collection.name)
   |> list.fold(namespace, _, filepath.join)
 }
@@ -123,7 +118,8 @@ fn object_tmp_path(key: Key(t)) -> String {
     |> string.slice(0, 16)
   let name =
     key.collection.name <> "-" <> key.id <> "-" <> random_component <> ".json"
-  key.collection.config.temporary_directory
+  key.collection.config.storage_path
+  |> filepath.join("temporary")
   |> filepath.join(name)
 }
 
