@@ -11,7 +11,7 @@ It doesn't have transactions, MVCC, or anything like that. It's just
 writing files to disc. Useful for tiny little projects, and for fun.
 
 ```sh
-gleam add storail@2
+gleam add storail@3
 ```
 ```gleam
 import storail
