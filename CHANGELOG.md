@@ -1,5 +1,10 @@
 # Changelog
 
+## v3.0.0 - 2024-12-22
+
+- `gleam/dynamic/decode` decoders are now used instead of `decode/zero`
+  decoders.
+
 ## v2.1.0 - 2024-12-11
 
 - Added the `optional_read` function.

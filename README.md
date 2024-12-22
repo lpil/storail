@@ -28,7 +28,7 @@ pub fn main() {
   let cats = storail.Collection(
     name: "cats", 
     to_json: my_app.cat_to_json,
-    decoder: my_app.cat_decoder,
+    decoder: my_app.cat_decoder(),
     config:,
   )
 

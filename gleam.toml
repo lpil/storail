@@ -1,5 +1,5 @@
 name = "storail"
-version = "2.1.0"
+version = "3.0.0"
 description = "A simple on-disc JSON based data store"
 
 licences = ["Apache-2.0"]
@@ -9,10 +9,9 @@ links = [
 ]
 
 [dependencies]
-gleam_stdlib = ">= 0.34.0 and < 2.0.0"
-gleam_json = ">= 1.0.0 and < 3.0.0"
+gleam_stdlib = ">= 0.51.0 and < 2.0.0"
+gleam_json = ">= 2.2.0 and < 3.0.0"
 simplifile = ">= 2.2.0 and < 3.0.0"
-decode = ">= 0.3.0 and < 1.0.0"
 directories = ">= 1.1.0 and < 2.0.0"
 filepath = ">= 1.0.0 and < 2.0.0"
 gleam_crypto = ">= 1.4.0 and < 2.0.0"

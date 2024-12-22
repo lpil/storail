@@ -1,5 +1,5 @@
-import decode/zero as de
 import gleam/dict
+import gleam/dynamic/decode as de
 import gleam/json
 import gleam/list
 import gleam/option

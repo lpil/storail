@@ -5,11 +5,11 @@
 ////
 //// Useful for tiny little projects, and for fun.
 
-import decode/zero as de
 import filepath
 import gleam/bit_array
 import gleam/crypto
 import gleam/dict.{type Dict}
+import gleam/dynamic/decode as de
 import gleam/json.{type Json}
 import gleam/list
 import gleam/option.{type Option}
@@ -195,7 +195,7 @@ fn parse_json(
   path: String,
   decoder: de.Decoder(t),
 ) -> Result(t, StorailError) {
-  case json.decode_bits(json, de.run(_, decoder)) {
+  case json.parse_bits(json, decoder) {
     Ok(d) -> Ok(d)
     Error(e) -> Error(CorruptJson(path, e))
   }
@@ -289,7 +289,7 @@ pub fn read_namespace(
       contents
       |> list.filter(string.ends_with(_, ".json"))
       |> list.try_map(fn(filename) {
-        let id = filename |> string.drop_right(5)
+        let id = filename |> string.drop_end(5)
         let path = filepath.join(path, filename)
         use json <- result.try(read_file(path, namespace, id))
         use data <- result.map(parse_json(json, path, collection.decoder))
@@ -324,7 +324,7 @@ pub fn list(
     Ok(contents) ->
       contents
       |> list.filter(string.ends_with(_, ".json"))
-      |> list.map(string.drop_right(_, 5))
+      |> list.map(string.drop_end(_, 5))
       |> Ok
   }
 }
