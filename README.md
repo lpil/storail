@@ -19,10 +19,7 @@ import my_app
 
 pub fn main() {
   // Construct config to specify where your data is written to.
-  let config = storail.Config(
-    data_directory: "/data",
-    temporary_directory: "/tmp/storail",
-  )
+  let config = storail.Config(storage_path: "tmp/storage")
 
   // Define a collection for a data type in your application.
   let cats = storail.Collection(
