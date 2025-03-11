@@ -267,10 +267,10 @@ pub fn delete(key: Key(t)) -> Result(Nil, StorailError) {
 /// ```gleam
 /// pub fn run(cats: Collection(Cat)) {
 ///   storail.read_namespace(cats, ["owner", "hayleigh"])
-///   // -> Ok([
-///   //   Cat(name: "Haskell", age: 3),
-///   //   Cat(name: "Agda", age: 2),
-///   // ])
+///   // -> Ok(dict.from_list([
+///   //   #("Haskell", Cat(name: "Haskell", age: 3)),
+///   //   #("Agda", Cat(name: "Agda", age: 2)),
+///   // ]))
 /// }
 /// ```
 ///
