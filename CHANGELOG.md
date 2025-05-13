@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.0.1 - 2025-05-13
+
+- Updated for latest `gleam_stdlib` and `gleam_json`.
+
 ## v3.0.0 - 2024-12-22
 
 - `gleam/dynamic/decode` decoders are now used instead of `decode/zero`
