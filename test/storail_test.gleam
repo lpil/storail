@@ -167,3 +167,15 @@ pub fn list_test() {
   |> list.sort(string.compare)
   |> should.equal(["a", "b"])
 }
+
+pub fn exists_test() {
+  reset_data()
+  let collection = cat_collection()
+
+  assert storail.key(collection, "wibble") |> storail.exists == Ok(False)
+
+  let assert Ok(_) =
+    storail.key(collection, "wibble") |> storail.write(Cat("a", 1))
+
+  assert storail.key(collection, "wibble") |> storail.exists == Ok(True)
+}

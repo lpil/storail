@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.1.0 - 2025-09-01
+
+- Added the `exists` function.
+
 ## v3.0.1 - 2025-05-13
 
 - Updated for latest `gleam_stdlib` and `gleam_json`.

@@ -328,3 +328,13 @@ pub fn list(
       |> Ok
   }
 }
+
+/// Check whether an object exists with the given key.
+///
+/// The validity of the object data is not checked, only the existance is.
+///
+pub fn exists(key: Key(t)) -> Result(Bool, StorailError) {
+  let path = object_data_path(key)
+  simplifile.is_file(path)
+  |> result.map_error(FileSystemError(path, _))
+}

@@ -1,5 +1,5 @@
 name = "storail"
-version = "3.0.1"
+version = "3.1.0"
 description = "A simple on-disc JSON based data store"
 
 licences = ["Apache-2.0"]
