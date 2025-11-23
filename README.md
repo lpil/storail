@@ -23,13 +23,13 @@ pub fn main() {
 
   // Define a collection for a data type in your application.
   let cats = storail.Collection(
-    name: "cats", 
+    name: "cats",
     to_json: my_app.cat_to_json,
     decoder: my_app.cat_decoder(),
     config:,
   )
 
-  // A key points to a specific object within the collection, which 
+  // A key points to a specific object within the collection, which
   // may or may not yet exist.
   let key = storail.key(collection, "nubi")
 
@@ -43,3 +43,8 @@ pub fn main() {
 ```
 
 Further documentation can be found at <https://hexdocs.pm/storail>.
+
+## What does the name mean?
+
+Stóráil is a Gaeilge word meaning storage. It's pronounced
+[like this](https://www.focloir.ie/media/ei/sounds_ogg/sto_xra_xil_c.ogg).
