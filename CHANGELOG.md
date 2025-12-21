@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.2.0 - 2025-12-21
+
+- Added the `move` function.
+
 ## v3.1.0 - 2025-09-01
 
 - Added the `exists` function.

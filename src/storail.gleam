@@ -176,6 +176,39 @@ pub fn write(key: Key(t), data: t) -> Result(Nil, StorailError) {
   Ok(Nil)
 }
 
+/// Move an object from one location to another in the store.
+///
+/// Returns an error if there is no object at that location, or if unable to
+/// perform the file system operation.
+///
+/// # Examples
+///
+/// ```gleam
+/// pub fn run(cats: Collection(Cat)) {
+///   let old = storail.key(cats, "baby")
+///   let new = storail.key(cats, "grown-up-baby")
+///   storail.move(from: old, to: new)
+///   // -> Ok(Nil)
+/// }
+/// ```
+///
+pub fn move(
+  from location: Key(resource),
+  to destination: Key(resource),
+) -> Result(Nil, StorailError) {
+  let old = object_data_path(location)
+  let new = object_data_path(destination)
+  use _ <- result.try(ensure_parent_directory_exists(new))
+
+  simplifile.rename(at: old, to: new)
+  |> result.map_error(fn(error) {
+    case error {
+      simplifile.Enoent -> ObjectNotFound(location.namespace, location.id)
+      _ -> FileSystemError(old, error)
+    }
+  })
+}
+
 fn read_file(
   path path: String,
   namespace namespace: List(String),

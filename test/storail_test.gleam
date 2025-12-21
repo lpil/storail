@@ -179,3 +179,25 @@ pub fn exists_test() {
 
   assert storail.key(collection, "wibble") |> storail.exists == Ok(True)
 }
+
+pub fn move_test() {
+  reset_data()
+  let collection = cat_collection()
+  let cat = Cat("Nubi", 5)
+
+  let key1 = storail.key(collection, "anubis")
+  assert storail.write(key1, cat) == Ok(Nil)
+  assert storail.read(key1) == Ok(Cat("Nubi", 5))
+
+  let key2 = storail.key(collection, "nubi")
+  assert storail.move(key1, key2) == Ok(Nil)
+  assert storail.read(key1) == Error(storail.ObjectNotFound([], "anubis"))
+  assert storail.read(key2) == Ok(cat)
+
+  let key3 = storail.namespaced_key(collection, ["rex"], "nubi")
+  assert storail.move(key1, key3) == Error(storail.ObjectNotFound([], "anubis"))
+  assert storail.move(key2, key3) == Ok(Nil)
+  assert storail.read(key1) == Error(storail.ObjectNotFound([], "anubis"))
+  assert storail.read(key2) == Error(storail.ObjectNotFound([], "nubi"))
+  assert storail.read(key3) == Ok(cat)
+}
