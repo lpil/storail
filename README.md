@@ -31,7 +31,7 @@ pub fn main() {
 
   // A key points to a specific object within the collection, which
   // may or may not yet exist.
-  let key = storail.key(collection, "nubi")
+  let key = storail.key(cats, "nubi")
 
   // Write some data
   let assert Ok(Nil) = storail.write(key, my_app.Cat("Nubi", 5))
